@@ -1,0 +1,32 @@
+method: dugm_r
+horizon: 40
+seed: 7101
+model:
+  state_dim: 4
+  dugm_features_dim: 128
+  state_features_dim: 32
+  fusion_hidden_sizes:
+  - 128
+  - 64
+  dropout: 0.05
+  dugm_channels: 2
+training:
+  objective: future_collision_bce
+  epochs: 8
+  batch_size: 256
+  learning_rate: 0.0003
+  weight_decay: 1.0e-05
+  device: cpu
+  positive_weight: auto
+thresholds:
+  calibration_split: val
+  calibration_mode: timestep
+  dangerous_recall_target: 0.9
+  early_warning_recall_target: 0.8
+  max_false_positive_rate: 0.25
+  max_false_trigger_episode_rate: 0.4
+  warning_steps_target: 10
+  step_time_s: 0.1
+  min_mean_warning_time_s: 0.5
+  epsilon_return_fraction: 0.5
+  max_sweep_thresholds: 4096

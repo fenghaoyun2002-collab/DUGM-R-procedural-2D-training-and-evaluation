@@ -1,0 +1,61 @@
+method: dugm_r
+seed: 7301
+curriculum: curriculum_2d.yaml
+robot_profile: robot_profile_2d.yaml
+observation_noise: false
+level_mix:
+  10: 0.5
+  8: 0.15
+  7: 0.1
+  6: 0.1
+  9: 0.1
+  5: 0.03
+  1: 0.01
+  0: 0.01
+switching:
+  min_recovery_dwell_steps: 4
+  return_dwell_steps: 3
+  max_task_steps_per_event: 4000
+  max_recovery_steps_per_episode: 4000
+  episode_max_steps_override: 4000
+reward:
+  risk_delta_weight: 1.0
+  final_success_bonus: 8.0
+  final_collision_penalty: 12.0
+  final_timeout_penalty: 4.0
+  handoff_failure_penalty: 4.0
+  recovery_step_penalty: 0.01
+  task_autorun_step_penalty: 0.0
+  close_clearance_threshold_m: 0.35
+  close_clearance_penalty_max: 0.25
+  action_l2_penalty: 0.005
+  action_delta_l2_penalty: 0.01
+  positive_linear_clearance_threshold_m: 0.35
+  positive_linear_penalty: 0.2
+ppo:
+  total_timesteps: 1250000
+  n_envs: 16
+  n_steps: 512
+  batch_size: 512
+  n_epochs: 4
+  learning_rate: 5.0e-05
+  gamma: 0.98
+  gae_lambda: 0.95
+  clip_range: 0.08
+  ent_coef: 0.001
+  vf_coef: 0.5
+  max_grad_norm: 0.5
+  policy_kwargs:
+    share_features_extractor: false
+    net_arch:
+      pi:
+      - 256
+      - 256
+      vf:
+      - 256
+      - 256
+  features_extractor_kwargs:
+    dugm_features_dim: 256
+    state_hidden_dim: 32
+    state_features_dim: 64
+    fused_features_dim: 256

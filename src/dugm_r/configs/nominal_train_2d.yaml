@@ -1,0 +1,134 @@
+method: dugm_nominal
+seed: 7
+device: cpu
+num_envs: 16
+curriculum: curriculum_2d.yaml
+robot_profile: robot_profile_2d.yaml
+observation_noise: true
+ppo:
+  learning_rate: 5.0e-05
+  n_steps: 512
+  batch_size: 512
+  n_epochs: 4
+  gamma: 0.995
+  gae_lambda: 0.95
+  clip_range: 0.08
+  ent_coef: 0.003
+  vf_coef: 0.5
+  max_grad_norm: 0.5
+  target_kl: 0.012
+  policy_kwargs:
+    normalize_images: false
+    share_features_extractor: false
+    net_arch:
+      pi:
+      - 256
+      - 256
+      vf:
+      - 256
+      - 256
+    log_std_init: -1.0
+  features_extractor_kwargs:
+    dugm_features_dim: 256
+    state_hidden_dim: 32
+    state_features_dim: 64
+    fused_features_dim: 256
+stages:
+- id: nominal_stage_01
+  level: 1
+  steps: 500000
+  level_mix:
+    1: 1.0
+  ppo_overrides:
+    learning_rate: 5.0e-05
+    clip_range: 0.08
+    ent_coef: 0.003
+    target_kl: 0.012
+- id: nominal_stage_02
+  level: 4
+  steps: 1000000
+  level_mix:
+    3: 0.45
+    4: 0.45
+    1: 0.1
+  ppo_overrides:
+    learning_rate: 5.0e-05
+    clip_range: 0.08
+    ent_coef: 0.003
+    target_kl: 0.012
+- id: nominal_stage_03
+  level: 6
+  steps: 1500000
+  level_mix:
+    6: 0.65
+    9: 0.25
+    3: 0.035
+    4: 0.035
+    1: 0.03
+  ppo_overrides:
+    learning_rate: 5.0e-05
+    clip_range: 0.08
+    ent_coef: 0.003
+    target_kl: 0.012
+- id: nominal_stage_04
+  level: 7
+  steps: 1500000
+  level_mix:
+    7: 0.5
+    6: 0.25
+    9: 0.12
+    3: 0.04
+    4: 0.04
+    1: 0.05
+  ppo_overrides:
+    learning_rate: 5.0e-05
+    clip_range: 0.08
+    ent_coef: 0.003
+    target_kl: 0.012
+- id: nominal_stage_05
+  level: 8
+  steps: 2000000
+  level_mix:
+    8: 0.5
+    7: 0.2
+    6: 0.15
+    9: 0.07
+    3: 0.025
+    4: 0.025
+    1: 0.03
+  ppo_overrides:
+    learning_rate: 5.0e-05
+    clip_range: 0.08
+    ent_coef: 0.003
+    target_kl: 0.012
+- id: nominal_stage_06
+  level: 10
+  steps: 3000000
+  level_mix:
+    10: 0.5
+    8: 0.18
+    7: 0.12
+    6: 0.1
+    9: 0.06
+    3: 0.015
+    4: 0.015
+    1: 0.01
+  ppo_overrides:
+    learning_rate: 2.5e-05
+    clip_range: 0.08
+    ent_coef: 0.003
+    target_kl: 0.012
+validation:
+  seeds:
+  - 2000000
+  - 2000001
+  - 2000002
+  - 2000003
+  levels:
+  - 1
+  - 4
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10

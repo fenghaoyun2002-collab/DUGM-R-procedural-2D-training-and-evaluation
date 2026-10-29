@@ -1,0 +1,88 @@
+algorithm: dugm_tracker
+version: 1
+input:
+  num_rays: 360
+  angle_min_rad: -3.141592653589793
+  fov_rad: 6.283185307179586
+  min_range_m: 0.18
+  max_range_m: 7.5
+  require_unique_sample_id: true
+  require_scan_pose: true
+  require_scan_timestamp: true
+  timestamp_epsilon_s: 1.0e-09
+  max_linear_speed_mps: 0.22
+  max_angular_speed_radps: 2.84
+  pose_translation_tolerance_m: 0.1
+  pose_rotation_tolerance_rad: 0.2
+grid:
+  width_m: 16.0
+  height_m: 16.0
+  resolution_m: 0.25
+  shape:
+  - 64
+  - 64
+  layout: channels_first
+  dtype: float32
+  channels:
+  - occupancy
+  - observed
+  - dynamic_mask
+  - velocity_x
+  - velocity_y
+  - velocity_valid
+  measurement_only_dynamic_output: true
+  historical_static_fusion: false
+  inflation_radius_m: 0.0
+  distance_transform: false
+clustering:
+  method: ordered_adjacent_segmentation
+  wraparound: true
+  epsilon_base_m: 0.06
+  epsilon_range_scale: 1.75
+  min_points: 2
+  max_diameter_m: 1.25
+  wall_rejection: true
+  wall_min_diameter_m: 0.8
+  wall_min_aspect_ratio: 8.0
+  person_component_merge: true
+  component_merge_max_centroid_distance_m: 0.6
+  component_merge_max_diameter_m: 0.85
+tracking:
+  state:
+  - px
+  - py
+  - vx
+  - vy
+  motion_model: ego_compensated_constant_velocity
+  assignment: hungarian
+  association_cost: mahalanobis
+  association_gate_chi2: 9.210340371976184
+  process_acceleration_std_mps2: 0.5
+  maneuver_mode:
+    process_acceleration_std_mps2: 1.2
+    trigger_nis_chi2: 5.991464547107979
+    persistent_innovation_nis: 0.1
+    persistent_innovation_frames: 2
+    association_ambiguity_margin_nis: 2.0
+    exit_stable_frames: 4
+    trigger_on_confirmed_miss: true
+  measurement_position_std_floor_m: 0.04
+  initial_position_std_m: 0.12
+  initial_velocity_std_mps: 0.5
+  min_hits: 3
+  max_misses_tentative: 1
+  max_misses_confirmed: 5
+  max_tracks: null
+dynamic_semantics:
+  mode: sticky_track_semantic
+  entry_speed_mps: 0.08
+  entry_min_consecutive: 3
+  entry_min_age: 4
+  require_velocity_std_below_mps: 0.3
+  exit_mode: track_deletion
+velocity:
+  representation: absolute_world_velocity_in_current_robot_axes
+  normalization_max_mps: 0.5
+  valid_mode: binary
+  valid_requires_current_measurement: true
+  valid_max_std_mps: 0.3

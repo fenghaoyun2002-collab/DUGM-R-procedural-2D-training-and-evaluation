@@ -1,0 +1,613 @@
+protocol: procedural_2d
+world:
+  size_m:
+  - 30.0
+  - 30.0
+  bounds_m:
+    x:
+    - -15.0
+    - 15.0
+    y:
+    - -15.0
+    - 15.0
+  robot_radius_m: 0.089
+  start_goal_distance_m:
+  - 5.0
+  - 10.0
+  start_goal_clearance_m: 0.45
+  goal_clearance_m:
+  - 0.5
+  - 0.7
+episode:
+  dt_s: 0.1
+  max_steps: 1000
+  goal_tolerance_m: 0.25
+  collision_clearance_margin_m: 0.101
+  initial_heading_noise_rad: 0.2617993877991494
+observation:
+  type: dugm
+  lidar_input:
+    num_rays: 360
+    angle_min_rad: -3.141592653589793
+    fov_rad: 6.283185307179586
+    angular_resolution_deg: 1.0
+    downsample: none
+  state:
+    shape:
+    - 4
+    fields:
+    - goal_distance
+    - goal_bearing
+    - previous_linear_command
+    - previous_angular_command
+    dtype: float32
+  source: estimated_dugm
+  shape:
+  - 2
+  - 64
+  - 64
+  channels:
+  - observed_unsafe
+  - visible_occupancy_cost
+  channel_layout: channels_first
+  ground_truth_allowed_as_estimator_input: false
+  ground_truth_used_for_observation: false
+  velocity_cost:
+    prediction_horizon_s: 4.0
+    trajectory_dt_s: 0.25
+    stationary_speed_epsilon_mps: 0.03
+    core_inflation_radius_m: auto
+    uncertainty_radius_m: 0.5
+    gradient: linear
+    visibility_mode: visible
+    visibility_range_tolerance_m: 0.35
+    static_endpoint_inflation_radius_m: 0.0
+    static_visibility_range_tolerance_m: 0.35
+    static_endpoint_inflation_semantics: cell_overlap_binary_dilation_sets_occupancy
+    estimated_velocity_valid_max_std_mps: 0.3
+    estimated_track_default_radius_m: 0.25
+    estimated_track_min_radius_m: 0.1
+    estimated_track_max_radius_m: 0.8
+    estimated_track_require_current_measurement: true
+    estimated_track_suppress_maneuver_tracks: true
+    dynamic_cost_mode: uncertainty_gaussian
+    prediction_dt_s: 0.2
+    sigma_shape_m: 0.0
+    covariance_epsilon: 0.0001
+    mahalanobis_cutoff_sq: 6.25
+    covariance_eigenvalue_min_m2: 0.0001
+    covariance_eigenvalue_max_m2: 0.64
+    process_noise_source: track_last_process_acceleration_std_mps2
+    temporal_decay: false
+    combine_obstacles: max
+    uncertainty_frame: velocity_aligned_bounded_speed
+    human_speed_max_mps: 0.7
+    clip_prediction_speed_to_max: true
+    longitudinal_process_acceleration_scale: 1.0
+    lateral_process_acceleration_scale: 0.15
+    longitudinal_velocity_covariance_scale: 1.0
+    lateral_velocity_covariance_scale: 0.25
+    covariance_eigenvalue_max_longitudinal_m2: 0.64
+    covariance_eigenvalue_max_lateral_m2: 0.09
+    low_speed_isotropic_threshold_mps: 0.05
+  dynamic_velocity_source: estimated
+  estimator_config: dugm_estimator.yaml
+  estimator_implementation: optimized
+  estimator_diagnostics_mode: summary
+  grid:
+    width_m: 16.0
+    height_m: 16.0
+    resolution_m: 0.25
+    grid_size:
+    - 64
+    - 64
+    channels:
+    - observed_unsafe
+    - visible_occupancy_cost
+    channel_order: channels_first
+    dtype: float32
+    robot_frame:
+      x_axis: forward
+      y_axis: left
+      image_top: forward
+    ray_tracing:
+      occupied_endpoint_requires_hit: true
+      max_range_is_no_return: true
+      inflation_radius_m: 0.0
+      distance_transform: false
+    value_semantics: zero_safe_one_unsafe
+  static_grid_encoder:
+    endpoint_rasterization: optimized
+    skips:
+    - lidar_preprocessor
+    - ordered_cluster_extractor
+    - multi_object_tracker
+    - dynamic_velocity_rasterizer
+reward:
+  mode: legacy
+  progress_weight: 4.0
+  heading_reward_mode: cosine_positive_progress
+  heading_alignment_weight: 0.0
+  near_obstacle_weight: 0.125
+  near_obstacle_clearance_m: 1.2
+  time_penalty_per_step: 0.04
+  success_bonus: 60.0
+  collision_penalty: -100.0
+  timeout_penalty: -40.0
+  angular_velocity_free_radps: 1.2
+  angular_velocity_weight: 0.1
+  smooth_linear_accel_weight: 0.05
+  smooth_angular_accel_weight: 0.05
+  stall_speed_epsilon_mps: 0.05
+  stall_penalty: 0.02
+  low_speed_timeout_rate_threshold: 0.5
+  near_obstacle_penalty_mode: normalized_linear
+  obstacle_approach_weight: 0.1
+  dynamic_proximity: null
+path_guidance:
+  enabled: false
+indoor_generation:
+  max_scene_attempts: 160
+  validator:
+    grid_resolution_m: 0.25
+    clearance_margin_m: 0.101
+    max_detour_ratio: 3.5
+levels:
+  0:
+    name: procedural_level_00
+    floorplans:
+    - straight_corridor
+    corridor_width_m:
+    - 4.0
+    - 10.0
+    wall_thickness_m: 0.28
+    static_boxes:
+    - 0
+    - 0
+    static_circles:
+    - 0
+    - 0
+    dynamic_actors:
+    - 0
+    - 0
+    initial_heading_noise_rad: 0.0
+    path_static_obstacles:
+    - 0
+    - 0
+  1:
+    name: procedural_level_01
+    floorplans:
+    - straight_corridor
+    corridor_width_m:
+    - 4.0
+    - 10.0
+    wall_thickness_m: 0.28
+    static_boxes:
+    - 0
+    - 0
+    static_circles:
+    - 0
+    - 0
+    dynamic_actors:
+    - 0
+    - 0
+    initial_heading_noise_rad: 0.2617993877991494
+    path_static_obstacles:
+    - 0
+    - 0
+  2:
+    name: procedural_level_02
+    floorplans:
+    - straight_corridor
+    corridor_width_m:
+    - 4.0
+    - 10.0
+    wall_thickness_m: 0.28
+    static_boxes:
+    - 0
+    - 0
+    static_circles:
+    - 0
+    - 0
+    path_static_obstacles:
+    - 1
+    - 1
+    path_obstacle_size_m:
+    - 0.45
+    - 0.95
+    path_obstacle_radius_m:
+    - 0.18
+    - 0.38
+    path_obstacle_t_m:
+    - 0.3
+    - 0.75
+    path_obstacle_lateral_offset_m:
+    - -0.6
+    - 0.6
+    path_obstacle_min_anchor_distance_m: 1.2
+    dynamic_actors:
+    - 0
+    - 0
+    initial_heading_noise_rad: 0.2617993877991494
+    path_obstacle_lateral_abs_offset_m:
+    - 0.4
+    - 0.6
+    path_obstacle_shape: circle
+  3:
+    name: procedural_level_03
+    floorplans:
+    - t_junction
+    corridor_width_m:
+    - 4.0
+    - 10.0
+    wall_thickness_m: 0.28
+    static_boxes:
+    - 0
+    - 0
+    static_circles:
+    - 0
+    - 0
+    path_static_obstacles:
+    - 0
+    - 0
+    dynamic_actors:
+    - 0
+    - 0
+    require_turning_route: true
+    turning_route_min_detour_ratio: 1.05
+    initial_heading_noise_rad: 0.2617993877991494
+  4:
+    name: procedural_level_04
+    floorplans:
+    - l_corridor
+    corridor_width_m:
+    - 4.0
+    - 10.0
+    wall_thickness_m: 0.28
+    static_boxes:
+    - 0
+    - 0
+    static_circles:
+    - 0
+    - 0
+    path_static_obstacles:
+    - 0
+    - 0
+    dynamic_actors:
+    - 0
+    - 0
+    require_turning_route: true
+    turning_route_min_detour_ratio: 1.05
+    initial_heading_noise_rad: 0.2617993877991494
+  5:
+    name: procedural_level_05
+    floorplans:
+    - straight_corridor
+    - l_corridor
+    - t_junction
+    corridor_width_m:
+    - 4.0
+    - 10.0
+    wall_thickness_m: 0.28
+    static_boxes:
+    - 0
+    - 0
+    static_circles:
+    - 0
+    - 0
+    box_size_m:
+    - 0.45
+    - 1.2
+    circle_radius_m:
+    - 0.18
+    - 0.4
+    path_static_obstacles:
+    - 1
+    - 2
+    path_obstacle_size_m:
+    - 0.45
+    - 1.0
+    path_obstacle_radius_m:
+    - 0.18
+    - 0.38
+    path_obstacle_t_m:
+    - 0.25
+    - 0.8
+    path_obstacle_lateral_offset_m:
+    - -0.65
+    - 0.65
+    path_obstacle_min_anchor_distance_m: 1.2
+    noise_clutter_bias: 0.15
+    dynamic_actors:
+    - 0
+    - 0
+    require_turning_route: true
+    turning_route_min_detour_ratio: 1.05
+    initial_heading_noise_rad: 0.2617993877991494
+    path_obstacle_shape: circle
+    path_obstacle_lateral_abs_offset_m:
+    - 0.35
+    - 0.65
+  6:
+    name: procedural_level_06
+    floorplans:
+    - straight_corridor
+    - l_corridor
+    - t_junction
+    corridor_width_m:
+    - 4.0
+    - 10.0
+    wall_thickness_m: 0.28
+    static_boxes:
+    - 0
+    - 0
+    static_circles:
+    - 0
+    - 0
+    box_size_m:
+    - 0.45
+    - 1.25
+    circle_radius_m:
+    - 0.18
+    - 0.42
+    path_static_obstacles:
+    - 2
+    - 3
+    path_obstacle_size_m:
+    - 0.45
+    - 1.05
+    path_obstacle_radius_m:
+    - 0.18
+    - 0.4
+    path_obstacle_t_m:
+    - 0.25
+    - 0.8
+    path_obstacle_lateral_offset_m:
+    - -0.75
+    - 0.75
+    path_obstacle_min_anchor_distance_m: 1.2
+    noise_clutter_bias: 0.2
+    dynamic_actors:
+    - 0
+    - 0
+    require_turning_route: true
+    turning_route_min_detour_ratio: 1.05
+    initial_heading_noise_rad: 0.2617993877991494
+    path_obstacle_shape: circle
+    path_obstacle_lateral_abs_offset_m:
+    - 0.35
+    - 0.75
+  7:
+    name: procedural_level_07
+    floorplans:
+    - straight_corridor
+    - l_corridor
+    - t_junction
+    corridor_width_m:
+    - 4.0
+    - 10.0
+    wall_thickness_m: 0.28
+    static_boxes:
+    - 0
+    - 0
+    static_circles:
+    - 0
+    - 0
+    box_size_m:
+    - 0.45
+    - 1.35
+    circle_radius_m:
+    - 0.18
+    - 0.45
+    path_static_obstacles:
+    - 0
+    - 0
+    path_obstacle_size_m:
+    - 0.45
+    - 1.1
+    path_obstacle_radius_m:
+    - 0.18
+    - 0.42
+    path_obstacle_t_m:
+    - 0.25
+    - 0.8
+    path_obstacle_lateral_offset_m:
+    - -0.75
+    - 0.75
+    path_obstacle_min_anchor_distance_m: 1.2
+    noise_clutter_bias: 0.0
+    dynamic_actors:
+    - 3
+    - 5
+    dynamic_speed_mps:
+    - 0.1
+    - 0.3
+    dynamic_heading_mode: random
+    dynamic_reflection_motion: true
+    dynamic_reflection_pause_s: 1.0
+    dynamic_reflection_step_s: 0.1
+    dynamic_reflection_boundary_margin_m: 0.15
+    dynamic_reflection_collision_margin_m: 0.05
+    cart_size_m:
+    - 0.9
+    - 0.55
+    person_foot_radius_m: 0.14
+    person_foot_separation_m: 0.34
+    require_turning_route: true
+    turning_route_min_detour_ratio: 1.05
+    initial_heading_noise_rad: 0.2617993877991494
+    path_obstacle_shape: circle
+    path_obstacle_lateral_abs_offset_m:
+    - 0.35
+    - 0.75
+  8:
+    name: procedural_level_08
+    floorplans:
+    - straight_corridor
+    - l_corridor
+    - t_junction
+    corridor_width_m:
+    - 4.0
+    - 10.0
+    wall_thickness_m: 0.28
+    static_boxes:
+    - 0
+    - 0
+    static_circles:
+    - 0
+    - 0
+    box_size_m:
+    - 0.45
+    - 1.25
+    circle_radius_m:
+    - 0.18
+    - 0.42
+    path_static_obstacles:
+    - 2
+    - 3
+    path_obstacle_size_m:
+    - 0.45
+    - 1.05
+    path_obstacle_radius_m:
+    - 0.18
+    - 0.4
+    path_obstacle_t_m:
+    - 0.25
+    - 0.8
+    path_obstacle_lateral_offset_m:
+    - -0.75
+    - 0.75
+    path_obstacle_min_anchor_distance_m: 1.2
+    noise_clutter_bias: 0.2
+    dynamic_actors:
+    - 3
+    - 5
+    dynamic_speed_mps:
+    - 0.1
+    - 0.25
+    dynamic_heading_mode: mixed
+    dynamic_heading_lane_weight: 0.4
+    dynamic_heading_cross_weight: 0.25
+    dynamic_heading_diagonal_weight: 0.2
+    dynamic_heading_path_cross_weight: 0.1
+    dynamic_heading_random_weight: 0.05
+    dynamic_heading_jitter_rad: 0.2
+    dynamic_reflection_motion: true
+    dynamic_reflection_pause_s: 1.0
+    dynamic_reflection_step_s: 0.1
+    dynamic_reflection_boundary_margin_m: 0.15
+    dynamic_reflection_collision_margin_m: 0.05
+    cart_size_m:
+    - 0.9
+    - 0.55
+    person_foot_radius_m: 0.14
+    person_foot_separation_m: 0.34
+    require_turning_route: true
+    turning_route_min_detour_ratio: 1.05
+    initial_heading_noise_rad: 0.2617993877991494
+    path_obstacle_shape: circle
+    path_obstacle_lateral_abs_offset_m:
+    - 0.35
+    - 0.75
+  9:
+    name: procedural_level_09
+    floorplans:
+    - straight_corridor
+    corridor_width_m:
+    - 3.0
+    - 7.0
+    wall_thickness_m: 0.28
+    static_boxes:
+    - 0
+    - 0
+    static_circles:
+    - 0
+    - 0
+    path_static_obstacles:
+    - 2
+    - 4
+    path_obstacle_shape: circle
+    path_obstacle_radius_m:
+    - 0.1
+    - 0.25
+    path_obstacle_t_m:
+    - 0.15
+    - 0.85
+    path_obstacle_lateral_offset_m:
+    - -0.45
+    - 0.45
+    path_obstacle_min_anchor_distance_m: 0.9
+    dynamic_actors:
+    - 0
+    - 0
+    initial_heading_noise_rad: 0.0
+  10:
+    name: procedural_level_10
+    floorplans:
+    - straight_corridor
+    - l_corridor
+    - t_junction
+    corridor_width_m:
+    - 4.0
+    - 10.0
+    wall_thickness_m: 0.28
+    static_boxes:
+    - 0
+    - 0
+    static_circles:
+    - 0
+    - 0
+    box_size_m:
+    - 0.45
+    - 1.25
+    circle_radius_m:
+    - 0.18
+    - 0.42
+    path_static_obstacles:
+    - 3
+    - 5
+    path_obstacle_size_m:
+    - 0.45
+    - 1.05
+    path_obstacle_radius_m:
+    - 0.18
+    - 0.4
+    path_obstacle_t_m:
+    - 0.25
+    - 0.8
+    path_obstacle_lateral_offset_m:
+    - -0.75
+    - 0.75
+    path_obstacle_min_anchor_distance_m: 1.2
+    noise_clutter_bias: 0.2
+    dynamic_actors:
+    - 5
+    - 7
+    dynamic_speed_mps:
+    - 0.1
+    - 0.3
+    dynamic_heading_mode: mixed
+    dynamic_heading_lane_weight: 0.4
+    dynamic_heading_cross_weight: 0.25
+    dynamic_heading_diagonal_weight: 0.2
+    dynamic_heading_path_cross_weight: 0.1
+    dynamic_heading_random_weight: 0.05
+    dynamic_heading_jitter_rad: 0.2
+    dynamic_reflection_motion: true
+    dynamic_reflection_pause_s: 1.0
+    dynamic_reflection_step_s: 0.1
+    dynamic_reflection_boundary_margin_m: 0.15
+    dynamic_reflection_collision_margin_m: 0.05
+    cart_size_m:
+    - 0.9
+    - 0.55
+    person_foot_radius_m: 0.14
+    person_foot_separation_m: 0.34
+    require_turning_route: true
+    turning_route_min_detour_ratio: 1.05
+    initial_heading_noise_rad: 0.2617993877991494
+    path_obstacle_shape: circle
+    path_obstacle_lateral_abs_offset_m:
+    - 0.35
+    - 0.75
+    max_steps: 1500

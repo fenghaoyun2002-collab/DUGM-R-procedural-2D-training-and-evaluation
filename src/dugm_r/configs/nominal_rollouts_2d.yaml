@@ -1,0 +1,23 @@
+method: dugm_nominal
+seed: 57001
+episodes: 50000
+episodes_per_shard: 5
+max_steps_per_episode: 4000
+deterministic_policy: true
+observation_noise: false
+curriculum: curriculum_2d.yaml
+robot_profile: robot_profile_2d.yaml
+level_mix:
+  10: 0.5
+  8: 0.15
+  7: 0.1
+  6: 0.1
+  9: 0.1
+  5: 0.03
+  1: 0.01
+  0: 0.01
+label_horizon: 40
+split:
+  train: 0.7
+  val: 0.15
+  test: 0.15

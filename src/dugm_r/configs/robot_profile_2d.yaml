@@ -1,0 +1,35 @@
+geometry:
+  footprint_radius_m: 0.089
+  wheel_radius_m: 0.033
+  wheel_separation_m: 0.16
+action:
+  linear_velocity_bounds_mps:
+  - 0.0
+  - 0.22
+  angular_velocity_bounds_radps:
+  - -2.84
+  - 2.84
+  linear_accel_limit_mps2: 0.6
+  angular_accel_limit_radps2: 7.5
+  apply_wheel_speed_limits: true
+  wheel_max_radps: 6.388
+dynamics:
+  model: differential_drive
+  control_dt_s: 0.1
+  integration_substeps: 2
+lidar:
+  sensor_model: LDS-02
+  num_rays: 360
+  fov_rad: 6.283185307179586
+  min_range_m: 0.16
+  max_range_m: 8.0
+  update_rate_hz: 10.7
+noise:
+  lidar:
+    enabled: true
+    range_bias_std_m: 0.0
+    range_noise_std_m: 0.003
+    range_noise_ratio: 0.01
+    max_abs_noise_m: 0.01
+    max_abs_noise_ratio: 0.03
+    dropout_prob: 0.005
