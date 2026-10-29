@@ -9,10 +9,6 @@ This directory contains the complete **2D training pipeline** for the two compon
 
 The policies are trained in the 2D environment. The Isaac Sim benchmark is an **evaluation setting**, not a training dependency: every public training command runs without it. The benchmark is not included at present because the full benchmark is large and contains official NVIDIA assets that are inconvenient to release in this repository. There are no pretrained checkpoints, rollout datasets, thresholds, or result tables here; users train and test their own models.
 
-**Training distribution difference.** The selected internal nominal run used a final 2D course stage whose floorplan was measured from a B10 USD scene. This public package replaces that stage with a new procedural 2D stage. It retains the method, observation construction, PPO/RVF/recovery architecture, and training sequence, but it does not recreate the exact scene distribution or selected private checkpoint. The procedural 2D test results produced here are not the paper's Isaac Sim benchmark results.
-
-**中文说明：**这里提供 DUGM nominal policy 和 DUGM-R recovery policy 的完整 2D 训练流程；Isaac Sim benchmark 用于测试，不是运行这些训练命令的依赖。benchmark 目前未公开，一是整体体量过大，二是其中包含 NVIDIA 官方资产，现阶段不便随 GitHub 仓库发布。这里也不附带已有结果或 checkpoint。原内部训练最后一阶段使用了从 B10 USD 测量的 2D 地图，公开版以独立程序化场景替换，所以不能声称与原 checkpoint 的场景分布完全相同。
-
 ## Install and smoke run
 
 Requires Python 3.11 or newer. From this directory:
@@ -83,15 +79,15 @@ dugm-r render-rvf --rvf outputs/run01/rvf/rvf_h40.pt \
 
 ## Configuration map
 
-| File | Purpose | Main defaults |
-| --- | --- | --- |
-| `curriculum_2d.yaml` | Procedural levels, LiDAR, reward, DUGM observation | Levels 0–10; independent high-difficulty stages |
-| `dugm_estimator.yaml` | Scan clustering and tracking | 360 rays, 64 × 64 grid, Kalman/Hungarian association |
-| `nominal_train_2d.yaml` | `π_nom` PPO course | 6 stages, 16 envs, 9.5M steps, dual-branch CNN |
-| `nominal_rollouts_2d.yaml` | H40 data collection | 50,000 episodes, episode-level 70/15/15 split, float32 DUGM |
-| `rvf_h40.yaml` | RVF and validation threshold | 40 steps, 8 epochs, weighted BCE, hysteresis return fraction 0.5 |
-| `recovery_train_2d.yaml` | `π_rec` online switching PPO | 1.25M steps, 16 envs, 4-step minimum recovery and 3-step release dwell |
-| `eval_2d.yaml` | Fixed public 2D test scenes | Distinct test seeds for both methods |
+| File                         | Purpose                                            | Main defaults                                                          |
+| ---------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------- |
+| `curriculum_2d.yaml`       | Procedural levels, LiDAR, reward, DUGM observation | Levels 0–10; independent high-difficulty stages                       |
+| `dugm_estimator.yaml`      | Scan clustering and tracking                       | 360 rays, 64 × 64 grid, Kalman/Hungarian association                  |
+| `nominal_train_2d.yaml`    | `π_nom` PPO course                              | 6 stages, 16 envs, 9.5M steps, dual-branch CNN                         |
+| `nominal_rollouts_2d.yaml` | H40 data collection                                | 50,000 episodes, episode-level 70/15/15 split, float32 DUGM            |
+| `rvf_h40.yaml`             | RVF and validation threshold                       | 40 steps, 8 epochs, weighted BCE, hysteresis return fraction 0.5       |
+| `recovery_train_2d.yaml`   | `π_rec` online switching PPO                    | 1.25M steps, 16 envs, 4-step minimum recovery and 3-step release dwell |
+| `eval_2d.yaml`             | Fixed public 2D test scenes                        | Distinct test seeds for both methods                                   |
 
 ## License
 
